@@ -1,0 +1,14 @@
+curl -D- \
+-u admin:password \
+-X POST \
+-H "Content-Type: application/json" \
+--data '{
+          "jql":"fixVersion=$datename AND issuetype=Deploy-task",
+          "startAt":0,
+          "maxResults":1000,
+          "fields":["components"]
+         }' \
+"https://jira.domain/rest/api/2/search"
+
+
+grep name | sed 's/name/\n/g' |sed 's/ *description.*$//g' |sed '1,2d' |sed 's/":"//g' |sed 's/","//g'
