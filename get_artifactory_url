@@ -1,0 +1,34 @@
+DATA_FORMAT=$(date +%Y%m%d)
+
+
+JIRA_API=`curl -D- -u admin:admin -X POST -H "Content-Type: application/json" --data '{"jql":"fixVersion='$DATA_FORMAT'-Wildfly AND issuetype=Deploy-task","startAt":0,"maxResults":1000,"fields":["components"]}' "https://jira.test.com/rest/api/2/search"`
+
+#JIRA_API=`curl -D- -u admin:admin -X POST -H "Content-Type: application/json" --data '{"jql":"fixVersion=20191120-Wildfly AND issuetype=Deploy-task","startAt":0,"maxResults":1000,"fields":["components"]}' "https://jira.test.com/rest/api/2/search"`
+
+deployAP=$(echo $JIRA_API |grep name | sed 's/name/\n/g' |sed 's/ *description.*$//g' |sed '1,2d' |sed 's/":"//g' |sed 's/","//g')
+
+echo $deployAP > /tmp/today_deploy_AP.conf
+
+cat /tmp/today_deploy_AP.conf |sed 's/ /\n/g' > /tmp/today_deploy_Final.conf
+
+
+filename="/tmp/today_deploy_Final.conf"
+while read line; do
+
+        str="$line"
+
+        len=${#str}
+
+        if [ $len -ge 10 ]
+        then
+                if [ "${str:$len-10:10}" == "AppService" ]
+                then
+                   echo "http://test.com.tw/$str/$str.ear"
+                else
+                   echo "http://test.com.tw/$str/$str.war"
+                fi
+        else
+           echo "http://test.com.tw/$str/$str.war"
+        fi
+
+done < $filename
