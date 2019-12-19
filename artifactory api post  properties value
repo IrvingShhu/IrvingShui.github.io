@@ -1,0 +1,4 @@
+curl -u  user:password \
+-H "Content-Type: application/json" \
+--data '{"multiValue": false, "property": {"name": "value"}, "selectedValues": ["value"]}' \
+-X POST "https://artifactory.com.tw/artifactory/ui/artifactproperties?path=com/test/test/tet.ear&recursive=false&repoKey=libs-release-local"
